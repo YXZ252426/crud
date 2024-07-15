@@ -10,6 +10,7 @@ import com.example.crud.service.UserService;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -81,5 +82,18 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         userRepository.deleteById(id);//这一块不是普通的删除，因为user和role是绑定的，要级联删除
+    }
+    @Override
+    public UserDto findUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        return mapToUserDto(user);
+    }
+    @Override
+    @Transactional
+    public void updateUser(UserDto userDto) {
+        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + userDto.getId()));
+        user.setName(userDto.getFirstName() + " " + userDto.getLastName());
+        user.setEmail(userDto.getEmail());
+        userRepository.save(user);
     }
 }

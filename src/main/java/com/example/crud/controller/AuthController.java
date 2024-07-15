@@ -58,7 +58,7 @@ public class AuthController {
         if(result.hasErrors()){
             model.addAttribute("user", userDto);
             return "/register";
-        }
+        }//
 
         userService.saveUser(userDto);
         return "redirect:/register?success";
@@ -75,5 +75,17 @@ public class AuthController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/edit/{id}")//先edit跳转到edit_user，此时user->UserDto->Model进入html
+    public String showEditForm(@PathVariable Long id, Model model) {
+        UserDto user = userService.findUserById(id);
+        model.addAttribute("user", user);
+        return "edit_user";
+    }
+
+    @PostMapping("/update")
+    public String updateUser(@ModelAttribute("user") UserDto userDto) {
+        userService.updateUser(userDto);//这里也是用UserDto
+        return "redirect:/users";
     }
 }
