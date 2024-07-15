@@ -73,4 +73,12 @@ public class UserServiceImpl implements UserService {
         role.setName("ROLE_ADMIN");
         return roleRepository.save(role);
     }
+    @Override
+    public void deleteUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        user.getRoles().clear();
+        userRepository.save(user);
+
+        userRepository.deleteById(id);//这一块不是普通的删除，因为user和role是绑定的，要级联删除
+    }
 }
