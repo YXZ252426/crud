@@ -30,17 +30,16 @@ public class SpringSecurity {
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/register/**").permitAll()
                                 .requestMatchers("/index").permitAll()
-                                .requestMatchers("/users").hasRole("ADMIN")
-                                .requestMatchers("/delete/**").permitAll()
-                                .requestMatchers("/edit/**").permitAll()
-                                .requestMatchers("/update").permitAll()
-                                .requestMatchers("/add-user").permitAll()
-                                .requestMatchers("/register/saveInUser").permitAll()//目前权限全开，仅用于测试
+                                .requestMatchers("/users").hasAnyRole("ROLE_USER","ROLE_ADMIN")
+                                .requestMatchers("/delete/**").hasRole("ROLE_ADMIN")
+                                .requestMatchers("/edit/**", "/update", "/add-user","/register/saveInUser").hasAnyRole("ROLE_ADMIN", "ROLE_USER")
+                                .anyRequest().authenticated()//修改权限
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
                                 .defaultSuccessUrl("/users")
+                                .failureUrl("/login?error=true")
                                 .permitAll()
                 ).logout(
                         logout -> logout

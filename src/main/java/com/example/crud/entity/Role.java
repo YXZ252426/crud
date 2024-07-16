@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import java.util.List;
 
 @Setter
@@ -26,5 +29,5 @@ public class Role
 
     @ManyToMany(mappedBy="roles")
     @JsonIgnore // 避免无限递归
-    private List<User> users;
+    private Set<User> users = new HashSet<>();
 }

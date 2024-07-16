@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,11 +48,14 @@ public class UserServiceImpl implements UserService {
         // encrypt the password using spring security
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        Role role = roleRepository.findByName("ROLE_ADMIN");
+        // Find or create the role based on userDto's role
+        Role role = roleRepository.findByName(userDto.getRole());
         if (role == null) {
-            role = checkRoleExist();
+            role = new Role();
+            role.setName(userDto.getRole());
+            roleRepository.save(role);
         }
-        user.setRoles(Arrays.asList(role));
+        user.setRoles(Set.of(role));//转化为set以支持用户类别
         userRepository.save(user);
 
         // Cache the user

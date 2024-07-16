@@ -100,6 +100,21 @@
                         <p th:errors = "*{password}" class="text-danger"
                            th:if="${#fields.hasErrors('password')}"></p>
                     </div>
+                    <!---添加选择按钮-->
+                    <div class="form-group mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-control"
+                                id="role"
+                                name="role"
+                                th:field="*{role}"
+                                required>
+                            <option value="ROLE_USER">USER</option>
+                            <option value="ROLE_ADMIN">ADMIN</option>
+                        </select>
+                        <p th:errors="*{role}" class="text-danger"
+                           th:if="${#fields.hasErrors('role')}"></p>
+                    </div>
+
                     <div class="form-group">
                         <button class="btn btn-primary" type="submit">Register</button>
                         <span>Already registered? <a th:href="@{/login}">Login here</a></span>

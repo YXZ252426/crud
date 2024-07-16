@@ -23,4 +23,6 @@ public class UserDto
     private String email;
     @NotEmpty(message = "Password should not be empty")
     private String password;
+    @NotEmpty
+    private String role; // 添加角色字段
 }
