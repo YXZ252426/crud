@@ -67,14 +67,20 @@ public class AuthController {
     }
 
     // handler method to handle list of users
-    @GetMapping("/users")//实现分页功能
-    public String listUsers(Model model,
-                            @RequestParam(value = "page", defaultValue = "0") int page,
-                            @RequestParam(value = "size", defaultValue = "5") int size) {
-        Page<UserDto> userPage = userService.findPaginated(PageRequest.of(page, size));
+    @GetMapping("/users")//重构users，对邮箱的获取
+    public String listUsers(@RequestParam(defaultValue = "0") int page,
+                            @RequestParam(defaultValue = "5") int size,
+                            @RequestParam(required = false) String email,
+                            Model model) {
+        Page<UserDto> userPage;
+        if (email != null && !email.isEmpty()) {
+            userPage = userService.findUsersByEmailContaining(email, PageRequest.of(page, size));
+        } else {
+            userPage = userService.findPaginated(PageRequest.of(page, size));
+        }
         model.addAttribute("userPage", userPage);
         return "users";
-    }//新的有分页功能的users
+    }
     @GetMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
