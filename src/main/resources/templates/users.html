@@ -88,7 +88,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="user : ${users}" th:id="${user.id}">
+                <tr th:each="user : ${userPage.content}" th:id="${user.id}">
                     <td th:text="${user.id}">No ID</td>
                     <td th:text="${user.firstName}">No First Name</td>
                     <td th:text="${user.lastName}">No Last Name</td>
@@ -100,6 +100,25 @@
                 </tr>
                 </tbody>
             </table>
+            <div class="d-flex justify-content-between">
+                <div>
+                    Page [[${userPage.number} + 1]] of [[${userPage.totalPages}]]
+                </div>
+                <div><!--这个具体的逻辑是怎么实现的？分页的细节还不懂-->
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${userPage.hasPrevious()} ? '': 'disabled'">
+                            <a class="page-link" th:href="@{/users(page=${userPage.number - 1}, size=${userPage.size})}">Previous</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, userPage.totalPages)}"
+                            th:classappend="${userPage.number + 1 == i} ? 'active' : ''">
+                            <a class="page-link" th:href="@{/users(page=${i - 1}, size=${userPage.size})}">[[${i}]]</a>
+                        </li>
+                        <li class="page-item" th:classappend="${userPage.hasNext()} ? '': 'disabled'">
+                            <a class="page-link" th:href="@{/users(page=${userPage.number + 1}, size=${userPage.size})}">Next</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

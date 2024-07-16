@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import com.example.crud.dto.UserDto;
 import com.example.crud.entity.User;
 import com.example.crud.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,12 +67,14 @@ public class AuthController {
     }
 
     // handler method to handle list of users
-    @GetMapping("/users")
-    public String users(Model model){
-        List<UserDto> users = userService.findAllUsers();
-        model.addAttribute("users", users);
+    @GetMapping("/users")//实现分页功能
+    public String listUsers(Model model,
+                            @RequestParam(value = "page", defaultValue = "0") int page,
+                            @RequestParam(value = "size", defaultValue = "5") int size) {
+        Page<UserDto> userPage = userService.findPaginated(PageRequest.of(page, size));
+        model.addAttribute("userPage", userPage);
         return "users";
-    }
+    }//新的有分页功能的users
     @GetMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
@@ -112,7 +116,4 @@ public class AuthController {
         userService.saveUser(userDto);
         return "redirect:/users";
     }
-
-
-
 }

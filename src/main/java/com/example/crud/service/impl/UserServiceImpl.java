@@ -8,6 +8,8 @@ import com.example.crud.repository.UserRepository;
 
 import com.example.crud.service.UserService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,5 +97,10 @@ public class UserServiceImpl implements UserService {
         user.setName(userDto.getFirstName() + " " + userDto.getLastName());
         user.setEmail(userDto.getEmail());
         userRepository.save(user);
+    }
+    @Override
+    public Page<UserDto> findPaginated(Pageable pageable) {
+        Page<User> usersPage = userRepository.findAll(pageable);
+        return usersPage.map(this::mapToUserDto);
     }
 }
