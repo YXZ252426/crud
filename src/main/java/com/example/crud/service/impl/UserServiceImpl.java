@@ -5,11 +5,11 @@ import com.example.crud.entity.Role;
 import com.example.crud.entity.User;
 import com.example.crud.repository.RoleRepository;
 import com.example.crud.repository.UserRepository;
-
 import com.example.crud.service.UserService;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +24,19 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private RedisTemplate<String, Object> redisTemplate;
 
+    private static final String USER_CACHE_PREFIX = "user:";
+
+    @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           RedisTemplate<String, Object> redisTemplate) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -42,15 +48,20 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         Role role = roleRepository.findByName("ROLE_ADMIN");
-        if(role == null){
+        if (role == null) {
             role = checkRoleExist();
         }
         user.setRoles(Arrays.asList(role));
         userRepository.save(user);
+
+        // Cache the user
+        String key = USER_CACHE_PREFIX + user.getId();
+        redisTemplate.opsForValue().set(key, user);
     }
 
     @Override
     public User findUserByEmail(String email) {
+        // This method does not involve caching, as email is not a good key for caching
         return userRepository.findByEmail(email);
     }
 
@@ -58,21 +69,21 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map((user) -> mapToUserDto(user))
+                .map(this::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
-    private UserDto mapToUserDto(User user){//把user映射给UserDto实现前后端分离和解耦
+    private UserDto mapToUserDto(User user) {
         UserDto userDto = new UserDto();
         String[] str = user.getName().split(" ");
-        userDto.setId(user.getId()); // 确保映射 id 属性!!关键
+        userDto.setId(user.getId());
         userDto.setFirstName(str[0]);
         userDto.setLastName(str[1]);
         userDto.setEmail(user.getEmail());
         return userDto;
     }
 
-    private Role checkRoleExist(){
+    private Role checkRoleExist() {
         Role role = new Role();
         role.setName("ROLE_ADMIN");
         return roleRepository.save(role);
@@ -83,11 +94,20 @@ public class UserServiceImpl implements UserService {
         user.getRoles().clear();
         userRepository.save(user);
 
-        userRepository.deleteById(id);//这一块不是普通的删除，因为user和role是绑定的，要级联删除
+        userRepository.deleteById(id);
+        // Remove user from cache
+        String key = USER_CACHE_PREFIX + id;
+        redisTemplate.delete(key);
     }
     @Override
     public UserDto findUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        String key = USER_CACHE_PREFIX + id;
+        // Check cache first
+        User user = (User) redisTemplate.opsForValue().get(key);
+        if (user == null) {
+            user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+            redisTemplate.opsForValue().set(key, user);
+        }
         return mapToUserDto(user);
     }
     @Override
@@ -97,6 +117,10 @@ public class UserServiceImpl implements UserService {
         user.setName(userDto.getFirstName() + " " + userDto.getLastName());
         user.setEmail(userDto.getEmail());
         userRepository.save(user);
+
+        // Update the user cache
+        String key = USER_CACHE_PREFIX + user.getId();
+        redisTemplate.opsForValue().set(key, user);
     }
     @Override
     public Page<UserDto> findPaginated(Pageable pageable) {

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -24,5 +25,6 @@ public class Role
     private String name;
 
     @ManyToMany(mappedBy="roles")
+    @JsonIgnore // 避免无限递归
     private List<User> users;
 }
