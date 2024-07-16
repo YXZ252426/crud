@@ -88,4 +88,31 @@ public class AuthController {
         userService.updateUser(userDto);//这里也是用UserDto
         return "redirect:/users";
     }
+    @GetMapping("/add-user")//我现在新增add-user的方式类似于新增了一个原有功能的副本，但是感觉可能太冗余，不够优雅
+    public String showAddUserForm(Model model) {
+        model.addAttribute("user", new UserDto());
+        return "registerInUsers";  // 指向新增用户的表单视图
+    }
+    @PostMapping("/register/saveInUser")
+    public String registrationInUser(@Valid @ModelAttribute("user") UserDto userDto,//这个是不是User的函数，没有对user的操纵所以不需要在UserService添加？
+                               BindingResult result,
+                               Model model){
+        User existingUser = userService.findUserByEmail(userDto.getEmail());
+
+        if(existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()){
+            result.rejectValue("email", null,
+                    "There is already an account registered with the same email");
+        }
+
+        if(result.hasErrors()){
+            model.addAttribute("user", userDto);
+            return "/register/saveInUsers";
+        }//
+
+        userService.saveUser(userDto);
+        return "redirect:/users";
+    }
+
+
+
 }

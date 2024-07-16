@@ -34,6 +34,8 @@ public class SpringSecurity {
                                 .requestMatchers("/delete/**").permitAll()
                                 .requestMatchers("/edit/**").permitAll()
                                 .requestMatchers("/update").permitAll()
+                                .requestMatchers("/add-user").permitAll()
+                                .requestMatchers("/register/saveInUser").permitAll()//目前权限全开，仅用于测试
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
