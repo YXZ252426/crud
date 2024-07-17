@@ -8,6 +8,7 @@ import com.example.crud.repository.UserRepository;
 import com.example.crud.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
         userDto.setFirstName(str[0]);
         userDto.setLastName(str[1]);
         userDto.setEmail(user.getEmail());
-        userDto.setRole(user.getRoles().iterator().next().getName()); // 确保映射角色
+        userDto.setRole(user.getRoles().toString());
         return userDto;
     }
 
@@ -117,20 +118,40 @@ public class UserServiceImpl implements UserService {
         redisTemplate.opsForValue().set(key, user);
     }
     @Override
-    public Page<UserDto> findPaginated(Pageable pageable) {
-        Page<User> usersPage = userRepository.findAll(pageable);
+    public Page<UserDto> findPaginated(Pageable pageable) {//真正利用上了redis，redis最重要的就是每次在users界面不用反复调动MySQL
+        String cacheKey = USER_CACHE_PREFIX + pageable.getPageNumber() + ":" + pageable.getPageSize();
+        List<User> users = (List<User>) redisTemplate.opsForValue().get(cacheKey);
+        Page<User> usersPage;
+
+        if (users == null) {
+            // 如果缓存中没有数据，从数据库中查询
+            usersPage = userRepository.findAll(pageable);
+            // 将查询结果的内容缓存到Redis
+            redisTemplate.opsForValue().set(cacheKey, usersPage.getContent());
+        } else {
+            // 从Redis缓存中构建分页结果
+            long total = userRepository.count();  // 获取总记录数
+            usersPage = new PageImpl<>(users, pageable, total);
+        }
         return usersPage.map(this::mapToUserDto);
     }
-    @Override//模糊搜索的实现
-    public List<UserDto> findUsersByEmailContaining(String email) {
-        List<User> users = userRepository.findByEmailContaining(email);
-        return users.stream()
-                .map(this::mapToUserDto)
-                .collect(Collectors.toList());
-    }
     @Override
-    public Page<UserDto> findUsersByEmailContaining(String email, Pageable pageable) {
-        Page<User> usersPage = userRepository.findByEmailContaining(email, pageable);
+    public Page<UserDto> findUsersByEmailContaining(String email, Pageable pageable) {//正常搜索和模糊搜索都要redis，先搜索redis，如果没有就搜MySQL
+        String cacheKey = USER_CACHE_PREFIX + email + ":" + pageable.getPageNumber() + ":" + pageable.getPageSize();
+        List<User> users = (List<User>) redisTemplate.opsForValue().get(cacheKey);
+        Page<User> usersPage;
+
+        if (users == null) {
+            // 如果缓存中没有数据，从数据库中查询
+            usersPage = userRepository.findByEmailContaining(email, pageable);
+            // 将查询结果的内容缓存到Redis
+            redisTemplate.opsForValue().set(cacheKey, usersPage.getContent());
+        } else {
+            // 从Redis缓存中构建分页结果
+            long total = userRepository.count();  // 获取总记录数
+            usersPage = new PageImpl<>(users, pageable, total);
+        }
+
         return usersPage.map(this::mapToUserDto);
     }
 }

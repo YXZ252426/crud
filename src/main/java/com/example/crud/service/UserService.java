@@ -17,6 +17,5 @@ public interface UserService {
     void updateUser(UserDto userDto);
     UserDto findUserById(Long id);
     Page<UserDto> findPaginated(Pageable pageable);//这个功能最终都是要用UserRepository
-    List<UserDto> findUsersByEmailContaining(String email);//模糊搜素
     Page<UserDto> findUsersByEmailContaining(String email, Pageable pageable);
 }
