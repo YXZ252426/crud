@@ -10,7 +10,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan("com.example.crud.mapper")
+@MapperScan("com.example.crud.repository")
 public class MyBatisConfig {
 
     @Bean

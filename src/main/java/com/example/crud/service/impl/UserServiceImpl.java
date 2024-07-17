@@ -54,10 +54,10 @@ public class UserServiceImpl implements UserService {
         if (role == null) {
             role = new Role();
             role.setName(userDto.getRole());
-            roleRepository.save(role);
+            roleRepository.insertUser(role);
         }
         user.setRoles(Set.of(role));//转化为set以支持用户类别
-        userRepository.save(user);
+        userRepository.insertUser(user);
 
         // Cache the user
         String key = USER_CACHE_PREFIX + user.getId();
@@ -67,14 +67,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email);
-    }
-
-    @Override
-    public List<UserDto> findAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(this::mapToUserDto)
-                .collect(Collectors.toList());
     }
 
     private UserDto mapToUserDto(User user) {
@@ -90,9 +82,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        User user;
+        user= userRepository.findById(id);
+        if (user != null) {
+            throw new IllegalArgumentException("Invalid user Id: " + id);
+        }
         user.getRoles().clear();
-        userRepository.save(user);
         userRepository.deleteById(id);
         String key = USER_CACHE_PREFIX + id;
         redisTemplate.delete(key);
@@ -102,7 +97,10 @@ public class UserServiceImpl implements UserService {
         String key = USER_CACHE_PREFIX + id;
         User user = (User) redisTemplate.opsForValue().get(key);
         if (user == null) {
-            user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+            user = userRepository.findById(id);
+            if (user == null) {
+                throw new IllegalArgumentException("Invalid user Id: " + id);
+            }
             redisTemplate.opsForValue().set(key, user);
         }
         return mapToUserDto(user);
@@ -110,10 +108,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(UserDto userDto) {
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + userDto.getId()));
+        User user = userRepository.findById(userDto.getId());
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid user Id: " + userDto.getId());
+        }
         user.setName(userDto.getFirstName() + " " + userDto.getLastName());
         user.setEmail(userDto.getEmail());
-        userRepository.save(user);
+        userRepository.updateUser(user);
         String key = USER_CACHE_PREFIX + user.getId();
         redisTemplate.opsForValue().set(key, user);
     }
@@ -130,7 +131,7 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(cacheKey, usersPage.getContent());
         } else {
             // 从Redis缓存中构建分页结果
-            long total = userRepository.count();  // 获取总记录数
+            long total = userRepository.countUsers();  // 获取总记录数
             usersPage = new PageImpl<>(users, pageable, total);
         }
         return usersPage.map(this::mapToUserDto);
@@ -148,7 +149,7 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(cacheKey, usersPage.getContent());
         } else {
             // 从Redis缓存中构建分页结果
-            long total = userRepository.count();  // 获取总记录数
+            long total = userRepository.countUsers();  // 获取总记录数
             usersPage = new PageImpl<>(users, pageable, total);
         }
 
