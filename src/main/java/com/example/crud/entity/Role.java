@@ -1,5 +1,6 @@
 package com.example.crud.entity;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role implements Serializable {
+    @NotEmpty
     private Long id;
+    @NotEmpty
     private String name;
 
     @JsonIgnore // 避免无限递归

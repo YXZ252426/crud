@@ -1,5 +1,6 @@
 package com.example.crud.entity;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    @NotEmpty
     private Long id;
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String email;
+    @NotEmpty
     private String password;
 
     @JsonIgnore
