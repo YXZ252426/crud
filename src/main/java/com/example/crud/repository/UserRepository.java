@@ -12,6 +12,11 @@ import java.util.List;
 
 public interface UserRepository
 {
+    long countUsers();
+    void updateUser(User user);
+    User findByEmail(String email);
+
+
     /*@Select("SELECT * FROM users WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id"),
@@ -21,28 +26,12 @@ public interface UserRepository
             @Result(property = "roles", column = "id",
                     many = @Many(select = "com.example.crud.mapper.RoleMapper.findRolesByUserId"))
     })*/
-/*
-    @Select("SELECT * FROM users WHERE email = #{email}")
-    User findByEmail(String email);
-
     Page<User> findAll(Pageable pageable);//findAll涉及到对数据库的操作，所以要在这里写
     Page<User> findByEmailContaining(String email, Pageable pageable);//
-
-    @Select("SELECT COUNT(*) FROM users")
-    long countUsers();
-*/
-    User findByEmail(String email);
-/*
     @Insert("INSERT INTO users(email, name, password) VALUES(#{email}, #{name}, #{password})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertUser(User user);
-
-
-    @Update("UPDATE users SET name = #{name} WHERE id = #{id}")
-    void updateUser(User user);
-
-    @Delete("DELETE FROM users WHERE id = #{id}")
-    void deleteById(Long id);*/
+    void deleteById(Long id);
 }
 /*
 Page<User>: 返回一个 Page 对象，包含了用户实体 User 的分页结果。

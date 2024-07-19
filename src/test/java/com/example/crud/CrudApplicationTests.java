@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Scanner;
 
 @SpringBootTest
 public class CrudApplicationTests {
@@ -18,7 +19,8 @@ public class CrudApplicationTests {
 
 	@Test
 	void testGetAll() {
-		User user= userRepository.findByEmail("23051035@hdu.edu.cn");
-		System.out.println(user);
+
+		Scanner scanner = new Scanner(System.in);
+		scanner.nextLine();
 	}
 }
