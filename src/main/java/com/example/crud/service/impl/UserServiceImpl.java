@@ -1,25 +1,7 @@
 package com.example.crud.service.impl;
 
-import com.example.crud.dto.UserDto;
-import com.example.crud.entity.Role;
-import com.example.crud.entity.User;
-import com.example.crud.repository.RoleRepository;
-import com.example.crud.repository.UserRepository;
-import com.example.crud.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+/*
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -155,4 +137,4 @@ public class UserServiceImpl implements UserService {
 
         return usersPage.map(this::mapToUserDto);
     }
-}
+}*/

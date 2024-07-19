@@ -4,12 +4,15 @@ import com.example.crud.entity.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+@Mapper
+
 
 public interface UserRepository
 {
-    @Select("SELECT * FROM users WHERE id = #{id}")
+    /*@Select("SELECT * FROM users WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -17,8 +20,8 @@ public interface UserRepository
             @Result(property = "password", column = "password"),
             @Result(property = "roles", column = "id",
                     many = @Many(select = "com.example.crud.mapper.RoleMapper.findRolesByUserId"))
-    })
-
+    })*/
+/*
     @Select("SELECT * FROM users WHERE email = #{email}")
     User findByEmail(String email);
 
@@ -27,10 +30,9 @@ public interface UserRepository
 
     @Select("SELECT COUNT(*) FROM users")
     long countUsers();
-
-    @Select("SELECT * FROM users WHERE id = #{id}")
-    User findById(Long id);
-
+*/
+    User findByEmail(String email);
+/*
     @Insert("INSERT INTO users(email, name, password) VALUES(#{email}, #{name}, #{password})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertUser(User user);
@@ -40,7 +42,7 @@ public interface UserRepository
     void updateUser(User user);
 
     @Delete("DELETE FROM users WHERE id = #{id}")
-    void deleteById(Long id);
+    void deleteById(Long id);*/
 }
 /*
 Page<User>: 返回一个 Page 对象，包含了用户实体 User 的分页结果。

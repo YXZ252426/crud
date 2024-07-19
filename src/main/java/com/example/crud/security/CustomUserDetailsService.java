@@ -1,5 +1,5 @@
 package com.example.crud.security;
-
+/*
 import com.example.crud.entity.Role;
 import com.example.crud.entity.User;
 import com.example.crud.repository.UserRepository;
@@ -41,4 +41,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toSet());
     }//理解他是如何实现密码验证的，他靠的是 org. springframework. security. core，转化成他能识别的格式
-}
+}*/

@@ -13,7 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+/*
 @Controller
 
 public class AuthController {
@@ -122,4 +122,4 @@ public class AuthController {
         userService.saveUser(userDto);
         return "redirect:/users";
     }
-}
+}*/
