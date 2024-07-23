@@ -1,5 +1,6 @@
 package com.example.crud.repository;
 
+import com.example.crud.entity.Role;
 import com.example.crud.entity.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Page;
@@ -12,26 +13,16 @@ import java.util.List;
 
 public interface UserRepository
 {
+    List<Role> findRolesByUserId(Long userId);
     long countUsers();
     void updateUser(User user);
-    User findByEmail(String email);
-
-
-    /*@Select("SELECT * FROM users WHERE id = #{id}")
-    @Results({
-            @Result(property = "id", column = "id"),
-            @Result(property = "name", column = "name"),
-            @Result(property = "email", column = "email"),
-            @Result(property = "password", column = "password"),
-            @Result(property = "roles", column = "id",
-                    many = @Many(select = "com.example.crud.mapper.RoleMapper.findRolesByUserId"))
-    })*/
-    Page<User> findAll(Pageable pageable);//findAll涉及到对数据库的操作，所以要在这里写
-    Page<User> findByEmailContaining(String email, Pageable pageable);//
-    @Insert("INSERT INTO users(email, name, password) VALUES(#{email}, #{name}, #{password})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    void insertUser(User user);
     void deleteById(Long id);
+    User findByEmail(String email);
+    User findByID(Long id);
+    List<User> findAllUsers();
+    Page<User> findByEmailContaining(String email, Pageable pageable);//
+    void insertUser(User user);
+
 }
 /*
 Page<User>: 返回一个 Page 对象，包含了用户实体 User 的分页结果。

@@ -3,7 +3,10 @@ package com.example.crud.controller;
 //import jakarta.validation.Valid;
 import com.example.crud.dto.UserDto;
 import com.example.crud.entity.User;
+import com.example.crud.repository.UserRepository;
 import com.example.crud.service.UserService;
+import com.github.pagehelper.PageInfo;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +15,19 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-/*
+
 @Controller
 
 public class AuthController {
 
+    private final UserRepository userRepository;
     private UserService userService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     // handler method to handle home page request
@@ -60,7 +66,7 @@ public class AuthController {
         if(result.hasErrors()){
             model.addAttribute("user", userDto);
             return "/register";
-        }//
+        }
 
         userService.saveUser(userDto);
         return "redirect:/register?success";
@@ -69,15 +75,13 @@ public class AuthController {
     // handler method to handle list of users
     @GetMapping("/users")//重构users，对邮箱的获取
     public String listUsers(@RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "5") int size,
+                            @RequestParam(defaultValue = "3") int size,
                             @RequestParam(required = false) String email,
                             Model model) {
-        Page<UserDto> userPage;
-        if (email != null && !email.isEmpty()) {
-            userPage = userService.findUsersByEmailContaining(email, PageRequest.of(page, size));
-        } else {
-            userPage = userService.findPaginated(PageRequest.of(page, size));
-        }
+        PageInfo<UserDto> userPage = userService.findPaginated(page, size);
+        System.out.println("Total Pages: " + userPage.getPages());
+        System.out.println("Total Items: " + userPage.getTotal());
+        System.out.println("Current Page Items: " + userPage.getList().size());
         model.addAttribute("userPage", userPage);
         return "users";
     }
@@ -122,4 +126,4 @@ public class AuthController {
         userService.saveUser(userDto);
         return "redirect:/users";
     }
-}*/
+}

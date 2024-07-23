@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,5 +24,5 @@ public class UserDto
     @NotEmpty(message = "Password should not be empty")
     private String password;
     @NotEmpty
-    private String role; // 添加角色字段
+    private List<String> roles; // 添加角色字段
 }

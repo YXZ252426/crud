@@ -102,17 +102,17 @@
                     </div>
                     <!---添加选择按钮-->
                     <div class="form-group mb-3">
-                        <label class="form-label">Role</label>
+                        <label class="form-label">Roles</label>
                         <select class="form-control"
-                                id="role"
-                                name="role"
-                                th:field="*{role}"
+                                id="roles"
+                                name="roles"
+                                th:field="*{roles}"
                                 required>
-                            <option value="ROLE_USER">USER</option>
-                            <option value="ROLE_ADMIN">ADMIN</option>
+                            <option value="USER">USER</option>
+                            <option value="ADMIN">ADMIN</option>
                         </select>
-                        <p th:errors="*{role}" class="text-danger"
-                           th:if="${#fields.hasErrors('role')}"></p>
+                        <p th:errors="*{roles}" class="text-danger"
+                           th:if="${#fields.hasErrors('roles')}"></p>
                     </div>
 
                     <div class="form-group">

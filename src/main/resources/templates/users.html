@@ -92,7 +92,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="user : ${userPage.content}" th:id="${user.id}">
+                <tr th:each="user : ${userPage.list}" th:id="${user.id}">
                     <td th:text="${user.id}">No ID</td>
                     <td th:text="${user.firstName}">No First Name</td>
                     <td th:text="${user.lastName}">No Last Name</td>
@@ -106,19 +106,19 @@
             </table>
             <div class="d-flex justify-content-between">
                 <div>
-                    Page [[${userPage.number} + 1]] of [[${userPage.totalPages}]]
+                    Page [[${userPage.pageNum} + 1]] of [[${userPage.pages}]]
                 </div>
                 <div><!--这个具体的逻辑是怎么实现的？分页的细节还不懂-->
                     <ul class="pagination">
-                        <li class="page-item" th:classappend="${userPage.hasPrevious()} ? '': 'disabled'">
-                            <a class="page-link" th:href="@{/users(page=${userPage.number - 1}, size=${userPage.size}, email=${param.email})}">Previous</a><!--查询特定的email-->
+                        <li class="page-item" th:classappend="${userPage.hasPreviousPage} ? '': 'disabled'">
+                            <a class="page-link" th:href="@{/users(page=${userPage.pageNum - 1}, size=${userPage.pageSize}, email=${param.email})}">Previous</a><!--查询特定的email-->
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(1, userPage.totalPages)}"
-                            th:classappend="${userPage.number + 1 == i} ? 'active' : ''">
-                            <a class="page-link" th:href="@{/users(page=${i - 1}, size=${userPage.size}, email=${param.email})}">[[${i}]]</a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, userPage.pages)}"
+                            th:classappend="${userPage.pageNum + 1 == i} ? 'active' : ''">
+                            <a class="page-link" th:href="@{/users(page=${i - 1}, size=${userPage.pageSize}, email=${param.email})}">[[${i}]]</a>
                         </li>
-                        <li class="page-item" th:classappend="${userPage.hasNext()} ? '': 'disabled'">
-                            <a class="page-link" th:href="@{/users(page=${userPage.number + 1}, size=${userPage.size}, email=${param.email})}">Next</a>
+                        <li class="page-item" th:classappend="${userPage.hasNextPage} ? '': 'disabled'">
+                            <a class="page-link" th:href="@{/users(page=${userPage.pageNum + 1}, size=${userPage.pageSize}, email=${param.email})}">Next</a>
                         </li>
                     </ul>
                 </div>

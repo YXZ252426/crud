@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.crud.repository.UserRepository">
+    <!--新增用户-->
+
+    <insert id="insertUser" parameterType="com.example.crud.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (email,name,password)
+        VALUES (#{email}, #{name}, #{password})
+    </insert>
+    <!--删除用户-->
+    <delete id="deleteUserById" parameterType="Long">
+        DELETE FROM users
+        WHERE id = #{id}
+    </delete>
+    <!-- 统计用户总数 -->
+    <select id="countUsers" resultType="long">
+        SELECT COUNT(*) FROM users
+    </select>
+    <!-- 根据ID删除用户 -->
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM users
+        WHERE id = #{id}
+    </delete>
+    <!-- 更新用户信息 -->
+    <update id="updateUser" parameterType="com.example.crud.entity.User">
+        UPDATE users
+        SET email = #{email},name = #{name},password = #{password}
+        WHERE id = #{id}
+    </update>
+    <!-- 根据邮箱查询用户 -->
+    <select id="findByEmail" resultType="com.example.crud.entity.User" parameterType="String">
+        SELECT *
+        FROM users
+        WHERE email = #{email}
+    </select>
+    <!--根据ID查询用户-->
+    <select id="findByID" resultType="com.example.crud.entity.User" parameterType="Long">
+        SELECT *
+        FROM users
+        WHERE id = #{id}
+    </select>
+    <select id="findRolesByUserId" resultType="com.example.crud.entity.Role">
+        SELECT r.id, r.name
+        FROM roles r
+                 INNER JOIN users_roles ur ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
+    </select>
+    <!--分页查询的实现-->
+    <select id="findAllUsers" resultType="com.example.crud.entity.User">
+        SELECT *
+        FROM users
+    </select>
+
+
+</mapper>
+<!--Page:页码，用于指示要获取的页数
+    Size:每页的记录数，即每页要显示的记录数量
+    Offset:偏移量，用于指示从数据库结果集中跳过多少条记录
+    Limit:一般等同于每页的记录数 size
+-->

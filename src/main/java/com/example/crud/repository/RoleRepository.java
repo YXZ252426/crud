@@ -8,8 +8,6 @@ import java.util.List;
 public interface RoleRepository
 {
     void insertRole(Role role);
-
-    List<Role> findRolesByUserId(Long userId);
-
     Role findByName(String name);
+    List<Role> findRolesByUserId(Long userId);
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.crud.repository.UserRoleRepository">
+    <!--新增映射关系-->
+    <insert id="InsertUserRole" parameterType="com.example.crud.entity.UserRole" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users_roles (user_id, role_id)
+        VALUES (#{userId}, #{roleId})
+    </insert>
+    <!--删除映射关系-->
+    <delete id="deleteByUserId" parameterType="Long">
+        DELETE FROM users_roles
+        WHERE user_id = #{userId}
+    </delete>
+</mapper>
